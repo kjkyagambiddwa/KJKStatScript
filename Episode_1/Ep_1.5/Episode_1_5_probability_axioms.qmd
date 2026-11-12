@@ -1,27 +1,323 @@
 ---
-title: "1.5: Empirical Proof of Probability Axioms using Kampala Dekadal Rainfall"
+title: "KJK StatScript — Series 1: Foundations of Quantitative Reasoning"
+subtitle: "Module 1: What Is Probability? | Episode 1.5: R & Quarto Implementation : Proving Probability Axioms with Real Data"
 author: "Kyagambiddwa Joseph Kelly"
-format: html
-editor: visual
+date: "2026-11-11"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: false
+    code-tools: true
+    fig-width: 8
+    fig-height: 5.5
+    html-math-method: mathml
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
 
-## Quarto
+## About the Course
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+**KJK StatScript** is an educational platform designed to bridge theoretical probability, computational data science, and East African macroeconomic policy.
 
-## Running Code
+- **Module Focus:** Moving from abstract textbook examples (dice, cards, urns) to empirical, measure-theoretic probability grounded in real-world data.
+- **Pedagogical Approach:** **"Just-In-Time" Syntax Callouts.** Programming concepts are introduced at the exact moment they are required to solve a statistical problem, ensuring complete beginners can follow along in RStudio without losing sight of the underlying mathematics.
+- **Core Objective of Episode 1.5:** To translate Kolmogorov's Axioms of Probability—established theoretically in Episode 1.2—into executable R code (`tidyverse`, `ggplot2`) within a Quarto publication environment using a 45.8-year East African climate time series.
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+------------------------------------------------------------------------
+
+## About the Dataset
+
+### Overview
+
+This document analyzes the **Kampala Subnational Dekadal Rainfall Dataset (1981–2026)**, derived from the United Nations World Food Programme (WFP) Vulnerability Analysis and Mapping (VAM) data engine and the Climate Hazards Group InfraRed Precipitation with Stations (**CHIRPS**).
+
+### Technical & Geographic Specifications
+
+- **Geographic Unit:** Kampala District, Uganda
+- **Administrative Hierarchy:** Administrative Level 2 (`adm_level = 2`)
+- **UN OCHA Place Code (PCODE):** `UG1002` (`adm_id = 999571`)
+- **Spatial Grid Resolution:** `n_pixels = 19` ($\approx$ 475 $km^2$ spatial aggregation across 5 km * 5 km satellite cells)
+- **Temporal Resolution:** **Dekads (10-Day Intervals)**
+  - Dekad 1: Days 1–10 of the month (`YYYY-MM-01`)
+  - Dekad 2: Days 11–20 of the month (`YYYY-MM-11`)
+  - Dekad 3: Day 21 to the end of the month (`YYYY-MM-21`)
+- **Sample Space Dimension (**N): **1,650 dekads** (36 dekads/year across 45.8 years from January 1981 to October 2026)
+
+### Data Dictionary
+
+| Variable Name | Data Type | Units / Format | Description |
+|:-----------------|:-----------------|:-----------------|:-----------------|
+| `date` | `character` / `Date` | `MM/DD/YYYY` | Start date of the 10-day dekad |
+| `adm_level` | `integer` | Category (`2`) | Administrative boundary tier (Level 2 = District) |
+| `adm_id` | `integer` | Numeric ID | Unique WFP database identifier (`999571`) |
+| `PCODE` | `character` | String Code | UN OCHA standardized spatial code (`UG1002`) |
+| `n_pixels` | `integer` | Integer Count | Number of satellite grid cells covering the district (`19`) |
+| `rfh` | `double` | Millimeters ($mm$) | **Rainfall Height:** Observed dekadal precipitation |
+| `rfh_avg` | `double` | Millimeters ($mm$) | **Historical Baseline:** 30-year dekadal mean |
+| `rfq` | `double` | Percentage ($\%$) | **Rainfall Anomaly Ratio:** $\left(\frac{\text{rfh}}{\text{rfh\_avg}}\right) \times 100\%$ |
+
+------------------------------------------------------------------------
+
+## Environment Setup & Data Loading
+
+::: {.callout-note title="R Micro-Hint 1: Packages & Tidy Data Frames"}
+- **`library(tidyverse)`**: Loads the Tidyverse ecosystem, including `dplyr` (data manipulation), `readr` (fast data loading), and `ggplot2` (graphics).
+- **`read_csv()`**: Imports CSV files into a **tibble** (an enhanced R data frame that prints cleanly without flooding your console).
+- **`nrow()`**: Measures the total number of rows (N) in an R data object.
+:::
 
 ```{r}
-1 + 1
+#| label: setup-data
+#| message: false
+#| warning: false
+
+library(tidyverse)
+
+# Load Kampala Dekadal Dataset (1981 - 2026)
+df <- read_csv("Kampala_Dekad_Data_since_1981_to_2026.csv")
+
+# Measure Total Sample Space Size (N = 1,650 dekads)
+N <- nrow(df)
+
+cat("Total Sample Space Size (N):", N, "dekads\n\n")
+
+# Preview data structure
+head(df %>% select(date, PCODE, n_pixels, rfh, rfh_avg, rfq), 5)
 ```
 
-You can add options to executable code like this
+## Variable Selection & Event Masking
+
+From Episode 1.2, we define our sample space ($\Omega$ or S) as all observed Kampala dekads ($N = 1,650$). We set up the following disjoint and non-disjoint events based on rainfall height extracted into a dedicated vector (`rfh_mm <- df$rfh`):
+
+- **Event** $A$ (Wet Dekad): $\text{rfh\_mm} \ge 20.0\text{ mm}$
+- **Event** $A^c$ (Dry / Low-Rain Dekad): $\text{rfh\_mm} < 20.0\text{ mm}$
+- **Event** $B$ (Heavy Rain Dekad): $\text{rfh\_mm} \ge 50.0\text{ mm}$
+- **Event** $C$ (Moderate Rain Dekad): $20.0\text{ mm} \le \text{rfh\_mm} < 50.0\text{ mm}$
+
+::: {.callout-note title="R Micro-Hint 2: Vector Extraction & Tidy Mutation"}
+- **`rfh_mm <- df$rfh`**: The `$` operator extracts a single column as an atomic vector.
+- **`mutate()`**: Adds new variables or modifies existing ones while preserving existing columns.
+- **Logical Operators (`>=`, `<`, `&`)**: Evaluate conditions element-by-element, returning logical vectors of `TRUE` and `FALSE`.
+:::
 
 ```{r}
-#| echo: false
-2 * 2
+#| label: event-masking
+
+# Select target precipitation variable
+rfh_mm <- df$rfh
+
+# Define boolean event vectors inside data frame
+df <- df %>%
+  mutate(
+    is_wet      = rfh_mm >= 20.0,                        # Event A
+    is_dry      = rfh_mm < 20.0,                         # Event A^c
+    is_heavy    = rfh_mm >= 50.0,                        # Event B
+    is_moderate = (rfh_mm >= 20.0) & (rfh_mm < 50.0)     # Event C
+  )
+
+# Display sample event mask table
+head(df %>% select(rfh, is_wet, is_dry, is_heavy, is_moderate), 10)
+
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+------------------------------------------------------------------------
+
+## Computing Empirical Probabilities
+::: {.callout-note title="R Micro-Hint 3: Logical Averaging with mean() and summarise()"}
+In R, `TRUE` coerces to `1` and `FALSE` coerces to `0`. Passing a logical vector to `mean()` calculates $\frac{\sum \text{TRUE}}{N}$, yielding the empirical probability $P(E)$. `summarise()` collapses thousands of rows into a single summary table.
+:::
+
+
+```{r}
+#| label: compute-probabilities
+
+# Summarize proportions and absolute event counts
+prob_summary <- df %>%
+  summarise(
+    p_A  = mean(is_wet),
+    p_Ac = mean(is_dry),
+    p_B  = mean(is_heavy),
+    p_C  = mean(is_moderate),
+    n_A  = sum(is_wet),
+    n_Ac = sum(is_dry),
+    n_B  = sum(is_heavy),
+    n_C  = sum(is_moderate)
+  )
+
+# Extract scalar probabilities
+p_A  <- prob_summary$p_A
+p_Ac <- prob_summary$p_Ac
+p_B  <- prob_summary$p_B
+p_C  <- prob_summary$p_C
+
+cat("Empirical Dekadal Probabilities (N = 1,650)\n")
+cat(sprintf("P(A)   [Wet Dekad (>=20mm)]:       %.4f  (%.2f%%) | Count: %d\n", p_A, p_A * 100, prob_summary$n_A))
+cat(sprintf("P(A^c) [Dry Dekad (<20mm)]:        %.4f  (%.2f%%) | Count: %d\n", p_Ac, p_Ac * 100, prob_summary$n_Ac))
+cat(sprintf("P(B)   [Heavy Rain (>=50mm)]:      %.4f  (%.2f%%) | Count: %d\n", p_B, p_B * 100, prob_summary$n_B))
+cat(sprintf("P(C)   [Moderate Rain (20-50mm)]:  %.4f  (%.2f%%) | Count: %d\n", p_C, p_C * 100, prob_summary$n_C))
+
+```
+
+------------------------------------------------------------------------
+
+## Programmatic Verification of Kolmogorov's Axioms
+
+We test whether our empirical estimates satisfy Kolmogorov's foundational rules derived in Episode 1.2:
+
+1.  **Axiom 1 & 2 (Non-negativity & Normalization):** $0 \le P(E) \le 1$ and $P(\Omega) = 1.0$.
+2.  **Proof 1 — The Complement Rule:** $P(A) + P(A^c) = 1.0$.
+3.  **Proof 2 — Additivity for Disjoint Sets:** Since $B \cap C = \emptyset$ and $A = B \cup C$:
+
+$$P(A) = P(B \cup C) = P(B) + P(C)$$
+
+4.  **Proof 3 — Monotonicity:** Since $B \subseteq A$ (Heavy rain is a subset of Wet dekads):
+
+$$P(B) \le P(A)$$
+
+::: {.callout-note title="R Micro-Hint 4: Safe Equality Testing with all.equal() and stopifnot()"}
+Floating-point arithmetic can introduce microscopic rounding differences. In R, `all.equal(x, y)` checks if numbers are equal within machine precision tolerances, while `stopifnot()` halts script execution if a condition is `FALSE` (R's native equivalent of Python's `assert`).
+:::
+
+
+```{r}
+#| label: verify-axioms
+
+cat("Kolmogorov Axiom Verifications \n\n")
+
+# Verification 1: Complement Rule P(A) + P(A^c) == 1.0
+complement_sum <- p_A + p_Ac
+cat("1. Complement Rule Check:\n")
+cat(sprintf("   P(A) + P(A^c) = %.4f + %.4f = %.4f\n", p_A, p_Ac, complement_sum))
+stopifnot(isTRUE(all.equal(complement_sum, 1.0)))
+cat("   RESULT: Verified Mathematically (P(A^c) = 1 - P(A))\n\n")
+
+# Verification 2: Additivity for Disjoint Sets P(B U C) == P(B) + P(C) == P(A)
+disjoint_sum <- p_B + p_C
+cat("2. Disjoint Additivity Check (A = B U C):\n")
+cat(sprintf("   P(B) + P(C) = %.4f + %.4f = %.4f | P(A) = %.4f\n", p_B, p_C, disjoint_sum, p_A))
+stopifnot(isTRUE(all.equal(disjoint_sum, p_A)))
+cat("   RESULT: Verified Mathematically (P(B U C) = P(B) + P(C))\n\n")
+
+# Verification 3: Monotonicity Property (B subset of A => P(B) <= P(A))
+cat("3. Monotonicity Check (B subset of A):\n")
+cat(sprintf("   P(B) [%.4f] <= P(A) [%.4f] is %s (%.4f <= %.4f)\n", p_B, p_A, p_B <= p_A, p_B, p_A))
+stopifnot(p_B <= p_A)
+cat("   RESULT: Verified Mathematically (P(B) <= P(A))\n\n")
+
+cat("STATUS: All Kolmogorov Probability Axioms Verified in R!\n")
+
+```
+
+------------------------------------------------------------------------
+
+## Sample Space Partition Visualization (`ggplot2`)
+
+We construct a publication-ready graphic of the sample space partition $\Omega = 1,650\text{ dekads}$. The three disjoint event sets $A^c$ (Dry), $C$ (Moderate), and $B$ (Heavy) completely cover $\Omega$ without overlap:
+
+$$\Omega = A^c \cup C \cup B \quad \implies \quad P(\Omega) = P(A^c) + P(C) + P(B) = 1.0$$
+
+::: {.callout-note title="R Micro-Hint 5: Grammar of Graphics with ggplot2"}
+- **`ggplot(data, aes(x, y, fill))`**: Initializes a plot canvas with mapping aesthetics.
+- **`geom_col()`**: Creates bar plots representing pre-computed summary values.
+- **`theme_minimal()`**: Applies a clean academic theme.
+- **`ggsave()`**: Exports publication-quality raster or vector images (`dpi = 300`).
+:::
+
+
+```{r}
+#| label: visualize-partition
+#| fig-cap: "Partition of Sample Space Ω (Kampala Rainfall 1981–2026, N = 1,650 Dekads)"
+
+# Prepare summary data frame for plotting
+df_plot <- tibble(
+  category = factor(
+    c("Dry Dekad (A^c)", "Moderate Rain (C)", "Heavy Rain (B)"),
+    levels = c("Dry Dekad (A^c)", "Moderate Rain (C)", "Heavy Rain (B)")
+  ),
+  probability = c(p_Ac * 100, p_C * 100, p_B * 100)
+)
+
+# Render ggplot chart
+p <- ggplot(df_plot, aes(x = category, y = probability, fill = category)) +
+  geom_col(width = 0.45, show.legend = FALSE) +
+  geom_text(
+    aes(label = sprintf("%.2f%%", probability)),
+    vjust = -0.5,
+    fontface = "bold",
+    size = 3.8
+  ) +
+  scale_fill_manual(values = c("#e74c3c", "#3498db", "#2ecc71")) +
+  scale_y_continuous(limits = c(0, 60), expand = expansion(mult = c(0, 0.05))) +
+  labs(
+    title = "Partition of Sample Space Ω (Kampala Rainfall 1981–2026, N = 1,650 Dekads)",
+    x = NULL,
+    y = "Probability (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 11, face = "bold", hjust = 0.5),
+    axis.title.y = element_text(size = 10),
+    panel.grid.major.x = element_blank()
+  )
+
+# Export graphic for Episode 1.7 Academic Report Writing
+ggsave("r_sample_space_partition.png", plot = p, width = 8, height = 5.5, dpi = 300)
+print(p)
+
+```
+
+------------------------------------------------------------------------
+
+## Empirical Insights
+
+An analysis of the **Kampala Subnational Dekadal Rainfall Dataset (1981–2026)** across $N = 1,650$ dekads yields the following key statistical properties:
+
+- **High Baseline Probability of Rainfall (**$P(A) = 63.09\%$): Over the 45.8-year period, nearly two-thirds of all 10-day dekads in Kampala recorded at least $20.0\text{ mm}$ of rainfall ($n_A = 1,041\text{ dekads}$).
+- **Moderate Rain Dominates the Sample Space (**$P(C) = 45.58\%$): Moderate dekadal rainfall ($20.0\text{ mm} \le \text{rfh} < 50.0\text{ mm}$) accounts for the largest partition of the sample space ($n_C = 752\text{ dekads}$), representing standard operational moisture levels.
+- **Low Frequency of Heavy Rain / Flood Risk (**$P(B) = 17.52\%$): Dekads with extreme precipitation ($\text{rfh} \ge 50.0\text{ mm}$) occur in less than 1 in 5 dekads ($n_B = 289\text{ dekads}$), confirming that extreme events occupy a strict subset of total wet dekads.
+- **Dry Dekad Occurrence (**$P(A^c) = 36.91\%$): Dry dekads ($\text{rfh} < 20.0\text{ mm}$) occur in approximately 37% of all observed periods ($n_{A^c} = 609\text{ dekads}$), reflecting Kampala's distinct bimodal dry season windows (January–February and June–July).
+
+------------------------------------------------------------------------
+
+## Mathematical & Methodological Summary
+
+This Quarto document successfully bridges measure-theoretic probability theory with practical R data engineering:
+
+1.  **Axiomatic Soundness:** Kolmogorov's three probability axioms hold programmatically across the entire 45.8-year climate record:
+
+- **Normalization:** $P(\Omega) = P(A^c \cup C \cup B) = 36.91\% + 45.58\% + 17.52\% = 100.0\%$.
+- **Complement Rule:** $P(A) + P(A^c) = 0.6309 + 0.3691 = 1.0000$.
+- **Additivity for Disjoint Sets:** $P(B \cup C) = P(B) + P(C) = 0.1752 + 0.4558 = 0.6309 = P(A)$.
+- **Monotonicity:** $P(B) \le P(A) \implies 0.1752 \le 0.6309$.
+
+2.  **Efficiency of Tidy Vectorization:** Using `dplyr::mutate()` combined with `mean()` provides an execution pattern that avoids slow R `for` loops when computing empirical probabilities across large vectors.
+3.  **Reproducible Proofing:** Leveraging R's `stopifnot()` and `all.equal()` functions enforces mathematical verification in automated analytical pipelines, preventing bad data or silent errors from passing downstream into policy models.
+
+------------------------------------------------------------------------
+
+## Institutional & Practical Recommendations
+
+### For Statistical Researchers & Students
+
+- **Adopt Explicit Vector Extraction:** Always isolate target metric columns into dedicated vectors (e.g., `rfh_mm <- df$rfh`) before applying logical comparison masks to maintain clean, readable script architecture.
+- **Export Visual Assets for Institutional Reports:** Save high-resolution chart exports (`ggsave("r_sample_space_partition.png", dpi = 300)`) directly into structured assets folders for cross-referencing in Microsoft Word and LaTeX document compilation (**Episode 1.7**).
+
+### For Institutional Policy Analysts (UBOS, NPA, Bank of Uganda)
+
+- **Integrate Dekadal Baselines into Climate Risk Planning:** Utilize the baseline probability $P(\text{rfh} \ge 20\text{mm}) = 63.09\%$ and heavy rainfall risk $P(\text{rfh} \ge 50\text{mm}) = 17.52\%$ to anchor agricultural monitoring, urban drainage planning under Uganda's **NDP IV**, and disaster resilience frameworks.
+- **Maintain Automated Audit Trails:** Embed programmatic `stopifnot()` checks within automated data pipeline R scripts to verify statistical properties automatically whenever fresh dekadal data feeds are appended from CHIRPS or WFP sources.
+
+------------------------------------------------------------------------
+
+## NB:
+
+- This document was generated with a CLI tool called Quarto. More information on it is in Hardley Wickams R4DS (2e), chapter 28.
+
+- The code script is on github in case you want to reproduce it.
+
+![](images/kjkStatScript_Like_Comment_Subscribe.jpeg){fig-align="center" width="400"}

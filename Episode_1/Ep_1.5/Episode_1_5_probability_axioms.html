@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Kyagambiddwa Joseph Kelly">
+<meta name="dcterms.date" content="2026-11-11">
+
+<title>KJK StatScript — Series 1: Foundations of Quantitative Reasoning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Episode_1_5_probability_axioms_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Episode_1_5_probability_axioms_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Episode_1_5_probability_axioms_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Episode_1_5_probability_axioms_files/libs/quarto-html/popper.min.js"></script>
+<script src="Episode_1_5_probability_axioms_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Episode_1_5_probability_axioms_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Episode_1_5_probability_axioms_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Episode_1_5_probability_axioms_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Episode_1_5_probability_axioms_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Episode_1_5_probability_axioms_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Episode_1_5_probability_axioms_files/libs/bootstrap/bootstrap-67270d1595a62d14f123c043d4fb2f18.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#about-the-course" id="toc-about-the-course" class="nav-link active" data-scroll-target="#about-the-course"><span class="header-section-number">1</span> About the Course</a></li>
+  <li><a href="#about-the-dataset" id="toc-about-the-dataset" class="nav-link" data-scroll-target="#about-the-dataset"><span class="header-section-number">2</span> About the Dataset</a>
+  <ul class="collapse">
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview"><span class="header-section-number">2.1</span> Overview</a></li>
+  <li><a href="#technical-geographic-specifications" id="toc-technical-geographic-specifications" class="nav-link" data-scroll-target="#technical-geographic-specifications"><span class="header-section-number">2.2</span> Technical &amp; Geographic Specifications</a></li>
+  <li><a href="#data-dictionary" id="toc-data-dictionary" class="nav-link" data-scroll-target="#data-dictionary"><span class="header-section-number">2.3</span> Data Dictionary</a></li>
+  </ul></li>
+  <li><a href="#environment-setup-data-loading" id="toc-environment-setup-data-loading" class="nav-link" data-scroll-target="#environment-setup-data-loading"><span class="header-section-number">3</span> Environment Setup &amp; Data Loading</a></li>
+  <li><a href="#variable-selection-event-masking" id="toc-variable-selection-event-masking" class="nav-link" data-scroll-target="#variable-selection-event-masking"><span class="header-section-number">4</span> Variable Selection &amp; Event Masking</a></li>
+  <li><a href="#computing-empirical-probabilities" id="toc-computing-empirical-probabilities" class="nav-link" data-scroll-target="#computing-empirical-probabilities"><span class="header-section-number">5</span> Computing Empirical Probabilities</a></li>
+  <li><a href="#programmatic-verification-of-kolmogorovs-axioms" id="toc-programmatic-verification-of-kolmogorovs-axioms" class="nav-link" data-scroll-target="#programmatic-verification-of-kolmogorovs-axioms"><span class="header-section-number">6</span> Programmatic Verification of Kolmogorov’s Axioms</a></li>
+  <li><a href="#sample-space-partition-visualization-ggplot2" id="toc-sample-space-partition-visualization-ggplot2" class="nav-link" data-scroll-target="#sample-space-partition-visualization-ggplot2"><span class="header-section-number">7</span> Sample Space Partition Visualization (<code>ggplot2</code>)</a></li>
+  <li><a href="#empirical-insights" id="toc-empirical-insights" class="nav-link" data-scroll-target="#empirical-insights"><span class="header-section-number">8</span> Empirical Insights</a></li>
+  <li><a href="#mathematical-methodological-summary" id="toc-mathematical-methodological-summary" class="nav-link" data-scroll-target="#mathematical-methodological-summary"><span class="header-section-number">9</span> Mathematical &amp; Methodological Summary</a></li>
+  <li><a href="#institutional-practical-recommendations" id="toc-institutional-practical-recommendations" class="nav-link" data-scroll-target="#institutional-practical-recommendations"><span class="header-section-number">10</span> Institutional &amp; Practical Recommendations</a>
+  <ul class="collapse">
+  <li><a href="#for-statistical-researchers-students" id="toc-for-statistical-researchers-students" class="nav-link" data-scroll-target="#for-statistical-researchers-students"><span class="header-section-number">10.1</span> For Statistical Researchers &amp; Students</a></li>
+  <li><a href="#for-institutional-policy-analysts-ubos-npa-bank-of-uganda" id="toc-for-institutional-policy-analysts-ubos-npa-bank-of-uganda" class="nav-link" data-scroll-target="#for-institutional-policy-analysts-ubos-npa-bank-of-uganda"><span class="header-section-number">10.2</span> For Institutional Policy Analysts (UBOS, NPA, Bank of Uganda)</a></li>
+  </ul></li>
+  <li><a href="#nb" id="toc-nb" class="nav-link" data-scroll-target="#nb"><span class="header-section-number">11</span> NB:</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">KJK StatScript — Series 1: Foundations of Quantitative Reasoning</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<p class="subtitle lead">Module 1: What Is Probability? | Episode 1.5: R &amp; Quarto Implementation : Proving Probability Axioms with Real Data</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Kyagambiddwa Joseph Kelly </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 11, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="about-the-course" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="about-the-course"><span class="header-section-number">1</span> About the Course</h2>
+<p><strong>KJK StatScript</strong> is an educational platform designed to bridge theoretical probability, computational data science, and East African macroeconomic policy.</p>
+<ul>
+<li><strong>Module Focus:</strong> Moving from abstract textbook examples (dice, cards, urns) to empirical, measure-theoretic probability grounded in real-world data.</li>
+<li><strong>Pedagogical Approach:</strong> <strong>“Just-In-Time” Syntax Callouts.</strong> Programming concepts are introduced at the exact moment they are required to solve a statistical problem, ensuring complete beginners can follow along in RStudio without losing sight of the underlying mathematics.</li>
+<li><strong>Core Objective of Episode 1.5:</strong> To translate Kolmogorov’s Axioms of Probability—established theoretically in Episode 1.2—into executable R code (<code>tidyverse</code>, <code>ggplot2</code>) within a Quarto publication environment using a 45.8-year East African climate time series.</li>
+</ul>
+<hr>
+</section>
+<section id="about-the-dataset" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="about-the-dataset"><span class="header-section-number">2</span> About the Dataset</h2>
+<section id="overview" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="overview"><span class="header-section-number">2.1</span> Overview</h3>
+<p>This document analyzes the <strong>Kampala Subnational Dekadal Rainfall Dataset (1981–2026)</strong>, derived from the United Nations World Food Programme (WFP) Vulnerability Analysis and Mapping (VAM) data engine and the Climate Hazards Group InfraRed Precipitation with Stations (<strong>CHIRPS</strong>).</p>
+</section>
+<section id="technical-geographic-specifications" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="technical-geographic-specifications"><span class="header-section-number">2.2</span> Technical &amp; Geographic Specifications</h3>
+<ul>
+<li><strong>Geographic Unit:</strong> Kampala District, Uganda</li>
+<li><strong>Administrative Hierarchy:</strong> Administrative Level 2 (<code>adm_level = 2</code>)</li>
+<li><strong>UN OCHA Place Code (PCODE):</strong> <code>UG1002</code> (<code>adm_id = 999571</code>)</li>
+<li><strong>Spatial Grid Resolution:</strong> <code>n_pixels = 19</code> (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≈</mo><annotation encoding="application/x-tex">\approx</annotation></semantics></math> 475 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><msup><mi>m</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">km^2</annotation></semantics></math> spatial aggregation across 5 km * 5 km satellite cells)</li>
+<li><strong>Temporal Resolution:</strong> <strong>Dekads (10-Day Intervals)</strong>
+<ul>
+<li>Dekad 1: Days 1–10 of the month (<code>YYYY-MM-01</code>)</li>
+<li>Dekad 2: Days 11–20 of the month (<code>YYYY-MM-11</code>)</li>
+<li>Dekad 3: Day 21 to the end of the month (<code>YYYY-MM-21</code>)</li>
+</ul></li>
+<li><strong>Sample Space Dimension (</strong>N): <strong>1,650 dekads</strong> (36 dekads/year across 45.8 years from January 1981 to October 2026)</li>
+</ul>
+</section>
+<section id="data-dictionary" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="data-dictionary"><span class="header-section-number">2.3</span> Data Dictionary</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable Name</th>
+<th style="text-align: left;">Data Type</th>
+<th style="text-align: left;">Units / Format</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>date</code></td>
+<td style="text-align: left;"><code>character</code> / <code>Date</code></td>
+<td style="text-align: left;"><code>MM/DD/YYYY</code></td>
+<td style="text-align: left;">Start date of the 10-day dekad</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>adm_level</code></td>
+<td style="text-align: left;"><code>integer</code></td>
+<td style="text-align: left;">Category (<code>2</code>)</td>
+<td style="text-align: left;">Administrative boundary tier (Level 2 = District)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>adm_id</code></td>
+<td style="text-align: left;"><code>integer</code></td>
+<td style="text-align: left;">Numeric ID</td>
+<td style="text-align: left;">Unique WFP database identifier (<code>999571</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>PCODE</code></td>
+<td style="text-align: left;"><code>character</code></td>
+<td style="text-align: left;">String Code</td>
+<td style="text-align: left;">UN OCHA standardized spatial code (<code>UG1002</code>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>n_pixels</code></td>
+<td style="text-align: left;"><code>integer</code></td>
+<td style="text-align: left;">Integer Count</td>
+<td style="text-align: left;">Number of satellite grid cells covering the district (<code>19</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>rfh</code></td>
+<td style="text-align: left;"><code>double</code></td>
+<td style="text-align: left;">Millimeters (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mi>m</mi></mrow><annotation encoding="application/x-tex">mm</annotation></semantics></math>)</td>
+<td style="text-align: left;"><strong>Rainfall Height:</strong> Observed dekadal precipitation</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>rfh_avg</code></td>
+<td style="text-align: left;"><code>double</code></td>
+<td style="text-align: left;">Millimeters (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mi>m</mi></mrow><annotation encoding="application/x-tex">mm</annotation></semantics></math>)</td>
+<td style="text-align: left;"><strong>Historical Baseline:</strong> 30-year dekadal mean</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>rfq</code></td>
+<td style="text-align: left;"><code>double</code></td>
+<td style="text-align: left;">Percentage (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>%</mi><annotation encoding="application/x-tex">\%</annotation></semantics></math>)</td>
+<td style="text-align: left;"><strong>Rainfall Anomaly Ratio:</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">rfh</mtext><mtext mathvariant="normal">rfh_avg</mtext></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\left(\frac{\text{rfh}}{\text{rfh\_avg}}\right) \times 100\%</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="environment-setup-data-loading" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="environment-setup-data-loading"><span class="header-section-number">3</span> Environment Setup &amp; Data Loading</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="R Micro-Hint 1: Packages &amp; Tidy Data Frames">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>R Micro-Hint 1: Packages &amp; Tidy Data Frames
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong><code>library(tidyverse)</code></strong>: Loads the Tidyverse ecosystem, including <code>dplyr</code> (data manipulation), <code>readr</code> (fast data loading), and <code>ggplot2</code> (graphics).</li>
+<li><strong><code>read_csv()</code></strong>: Imports CSV files into a <strong>tibble</strong> (an enhanced R data frame that prints cleanly without flooding your console).</li>
+<li><strong><code>nrow()</code></strong>: Measures the total number of rows (N) in an R data object.</li>
+</ul>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Kampala Dekadal Dataset (1981 - 2026)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"Kampala_Dekad_Data_since_1981_to_2026.csv"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Measure Total Sample Space Size (N = 1,650 dekads)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">nrow</span>(df)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Total Sample Space Size (N):"</span>, N, <span class="st">"dekads</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total Sample Space Size (N): 1650 dekads</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview data structure</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df <span class="sc">%&gt;%</span> <span class="fu">select</span>(date, PCODE, n_pixels, rfh, rfh_avg, rfq), <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 6
+  date      PCODE  n_pixels   rfh rfh_avg   rfq
+  &lt;chr&gt;     &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+1 1/1/1981  UG1002       19 18.8     17.2 107. 
+2 1/11/1981 UG1002       19  6.16    17.9  48.7
+3 1/21/1981 UG1002       19  9.21    16.8  65.2
+4 2/1/1981  UG1002       19  6.05    16.2  52.2
+5 2/11/1981 UG1002       19 31.1     18.5 154. </code></pre>
+</div>
+</div>
+</section>
+<section id="variable-selection-event-masking" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="variable-selection-event-masking"><span class="header-section-number">4</span> Variable Selection &amp; Event Masking</h2>
+<p>From Episode 1.2, we define our sample space (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math> or S) as all observed Kampala dekads (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>650</mn></mrow><annotation encoding="application/x-tex">N = 1,650</annotation></semantics></math>). We set up the following disjoint and non-disjoint events based on rainfall height extracted into a dedicated vector (<code>rfh_mm &lt;- df$rfh</code>):</p>
+<ul>
+<li><strong>Event</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math> (Wet Dekad): <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">rfh_mm</mtext><mo>≥</mo><mn>20.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow></mrow><annotation encoding="application/x-tex">\text{rfh\_mm} \ge 20.0\text{ mm}</annotation></semantics></math></li>
+<li><strong>Event</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>A</mi><mi>c</mi></msup><annotation encoding="application/x-tex">A^c</annotation></semantics></math> (Dry / Low-Rain Dekad): <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">rfh_mm</mtext><mo>&lt;</mo><mn>20.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow></mrow><annotation encoding="application/x-tex">\text{rfh\_mm} &lt; 20.0\text{ mm}</annotation></semantics></math></li>
+<li><strong>Event</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math> (Heavy Rain Dekad): <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">rfh_mm</mtext><mo>≥</mo><mn>50.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow></mrow><annotation encoding="application/x-tex">\text{rfh\_mm} \ge 50.0\text{ mm}</annotation></semantics></math></li>
+<li><strong>Event</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math> (Moderate Rain Dekad): <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow><mo>≤</mo><mtext mathvariant="normal">rfh_mm</mtext><mo>&lt;</mo><mn>50.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow></mrow><annotation encoding="application/x-tex">20.0\text{ mm} \le \text{rfh\_mm} &lt; 50.0\text{ mm}</annotation></semantics></math></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="R Micro-Hint 2: Vector Extraction &amp; Tidy Mutation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>R Micro-Hint 2: Vector Extraction &amp; Tidy Mutation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong><code>rfh_mm &lt;- df$rfh</code></strong>: The <code>$</code> operator extracts a single column as an atomic vector.</li>
+<li><strong><code>mutate()</code></strong>: Adds new variables or modifies existing ones while preserving existing columns.</li>
+<li><strong>Logical Operators (<code>&gt;=</code>, <code>&lt;</code>, <code>&amp;</code>)</strong>: Evaluate conditions element-by-element, returning logical vectors of <code>TRUE</code> and <code>FALSE</code>.</li>
+</ul>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select target precipitation variable</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>rfh_mm <span class="ot">&lt;-</span> df<span class="sc">$</span>rfh</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define boolean event vectors inside data frame</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_wet      =</span> rfh_mm <span class="sc">&gt;=</span> <span class="fl">20.0</span>,                        <span class="co"># Event A</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_dry      =</span> rfh_mm <span class="sc">&lt;</span> <span class="fl">20.0</span>,                         <span class="co"># Event A^c</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_heavy    =</span> rfh_mm <span class="sc">&gt;=</span> <span class="fl">50.0</span>,                        <span class="co"># Event B</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_moderate =</span> (rfh_mm <span class="sc">&gt;=</span> <span class="fl">20.0</span>) <span class="sc">&amp;</span> (rfh_mm <span class="sc">&lt;</span> <span class="fl">50.0</span>)     <span class="co"># Event C</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Display sample event mask table</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df <span class="sc">%&gt;%</span> <span class="fu">select</span>(rfh, is_wet, is_dry, is_heavy, is_moderate), <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 5
+     rfh is_wet is_dry is_heavy is_moderate
+   &lt;dbl&gt; &lt;lgl&gt;  &lt;lgl&gt;  &lt;lgl&gt;    &lt;lgl&gt;      
+ 1 18.8  FALSE  TRUE   FALSE    FALSE      
+ 2  6.16 FALSE  TRUE   FALSE    FALSE      
+ 3  9.21 FALSE  TRUE   FALSE    FALSE      
+ 4  6.05 FALSE  TRUE   FALSE    FALSE      
+ 5 31.1  TRUE   FALSE  FALSE    TRUE       
+ 6  4    FALSE  TRUE   FALSE    FALSE      
+ 7 10.1  FALSE  TRUE   FALSE    FALSE      
+ 8 75.8  TRUE   FALSE  TRUE     FALSE      
+ 9 69.2  TRUE   FALSE  TRUE     FALSE      
+10 49.1  TRUE   FALSE  FALSE    TRUE       </code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="computing-empirical-probabilities" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="computing-empirical-probabilities"><span class="header-section-number">5</span> Computing Empirical Probabilities</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="R Micro-Hint 3: Logical Averaging with mean() and summarise()">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>R Micro-Hint 3: Logical Averaging with mean() and summarise()
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In R, <code>TRUE</code> coerces to <code>1</code> and <code>FALSE</code> coerces to <code>0</code>. Passing a logical vector to <code>mean()</code> calculates <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mrow><mo>∑</mo><mtext mathvariant="normal">TRUE</mtext></mrow><mi>N</mi></mfrac><annotation encoding="application/x-tex">\frac{\sum \text{TRUE}}{N}</annotation></semantics></math>, yielding the empirical probability <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>E</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(E)</annotation></semantics></math>. <code>summarise()</code> collapses thousands of rows into a single summary table.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize proportions and absolute event counts</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>prob_summary <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_A  =</span> <span class="fu">mean</span>(is_wet),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_Ac =</span> <span class="fu">mean</span>(is_dry),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_B  =</span> <span class="fu">mean</span>(is_heavy),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_C  =</span> <span class="fu">mean</span>(is_moderate),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_A  =</span> <span class="fu">sum</span>(is_wet),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_Ac =</span> <span class="fu">sum</span>(is_dry),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_B  =</span> <span class="fu">sum</span>(is_heavy),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_C  =</span> <span class="fu">sum</span>(is_moderate)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract scalar probabilities</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>p_A  <span class="ot">&lt;-</span> prob_summary<span class="sc">$</span>p_A</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>p_Ac <span class="ot">&lt;-</span> prob_summary<span class="sc">$</span>p_Ac</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>p_B  <span class="ot">&lt;-</span> prob_summary<span class="sc">$</span>p_B</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>p_C  <span class="ot">&lt;-</span> prob_summary<span class="sc">$</span>p_C</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Empirical Dekadal Probabilities (N = 1,650)</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Empirical Dekadal Probabilities (N = 1,650)</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(A)   [Wet Dekad (&gt;=20mm)]:       %.4f  (%.2f%%) | Count: %d</span><span class="sc">\n</span><span class="st">"</span>, p_A, p_A <span class="sc">*</span> <span class="dv">100</span>, prob_summary<span class="sc">$</span>n_A))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(A)   [Wet Dekad (&gt;=20mm)]:       0.6309  (63.09%) | Count: 1041</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(A^c) [Dry Dekad (&lt;20mm)]:        %.4f  (%.2f%%) | Count: %d</span><span class="sc">\n</span><span class="st">"</span>, p_Ac, p_Ac <span class="sc">*</span> <span class="dv">100</span>, prob_summary<span class="sc">$</span>n_Ac))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(A^c) [Dry Dekad (&lt;20mm)]:        0.3691  (36.91%) | Count: 609</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(B)   [Heavy Rain (&gt;=50mm)]:      %.4f  (%.2f%%) | Count: %d</span><span class="sc">\n</span><span class="st">"</span>, p_B, p_B <span class="sc">*</span> <span class="dv">100</span>, prob_summary<span class="sc">$</span>n_B))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(B)   [Heavy Rain (&gt;=50mm)]:      0.1752  (17.52%) | Count: 289</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(C)   [Moderate Rain (20-50mm)]:  %.4f  (%.2f%%) | Count: %d</span><span class="sc">\n</span><span class="st">"</span>, p_C, p_C <span class="sc">*</span> <span class="dv">100</span>, prob_summary<span class="sc">$</span>n_C))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(C)   [Moderate Rain (20-50mm)]:  0.4558  (45.58%) | Count: 752</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="programmatic-verification-of-kolmogorovs-axioms" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="programmatic-verification-of-kolmogorovs-axioms"><span class="header-section-number">6</span> Programmatic Verification of Kolmogorov’s Axioms</h2>
+<p>We test whether our empirical estimates satisfy Kolmogorov’s foundational rules derived in Episode 1.2:</p>
+<ol type="1">
+<li><strong>Axiom 1 &amp; 2 (Non-negativity &amp; Normalization):</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>≤</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>E</mi><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0 \le P(E) \le 1</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi mathvariant="normal">Ω</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1.0</mn></mrow><annotation encoding="application/x-tex">P(\Omega) = 1.0</annotation></semantics></math>.</li>
+<li><strong>Proof 1 — The Complement Rule:</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>A</mi><mi>c</mi></msup><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1.0</mn></mrow><annotation encoding="application/x-tex">P(A) + P(A^c) = 1.0</annotation></semantics></math>.</li>
+<li><strong>Proof 2 — Additivity for Disjoint Sets:</strong> Since <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>∩</mo><mi>C</mi><mo>=</mo><mi>∅</mi></mrow><annotation encoding="application/x-tex">B \cap C = \emptyset</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>=</mo><mi>B</mi><mo>∪</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">A = B \cup C</annotation></semantics></math>:</li>
+</ol>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo>∪</mo><mi>C</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>C</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(A) = P(B \cup C) = P(B) + P(C)</annotation></semantics></math></p>
+<ol start="4" type="1">
+<li><strong>Proof 3 — Monotonicity:</strong> Since <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>⊆</mo><mi>A</mi></mrow><annotation encoding="application/x-tex">B \subseteq A</annotation></semantics></math> (Heavy rain is a subset of Wet dekads):</li>
+</ol>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(B) \le P(A)</annotation></semantics></math></p>
+<div class="callout callout-style-default callout-note callout-titled" title="R Micro-Hint 4: Safe Equality Testing with all.equal() and stopifnot()">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>R Micro-Hint 4: Safe Equality Testing with all.equal() and stopifnot()
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Floating-point arithmetic can introduce microscopic rounding differences. In R, <code>all.equal(x, y)</code> checks if numbers are equal within machine precision tolerances, while <code>stopifnot()</code> halts script execution if a condition is <code>FALSE</code> (R’s native equivalent of Python’s <code>assert</code>).</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Kolmogorov Axiom Verifications </span><span class="sc">\n\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Kolmogorov Axiom Verifications </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verification 1: Complement Rule P(A) + P(A^c) == 1.0</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>complement_sum <span class="ot">&lt;-</span> p_A <span class="sc">+</span> p_Ac</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"1. Complement Rule Check:</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1. Complement Rule Check:</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"   P(A) + P(A^c) = %.4f + %.4f = %.4f</span><span class="sc">\n</span><span class="st">"</span>, p_A, p_Ac, complement_sum))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   P(A) + P(A^c) = 0.6309 + 0.3691 = 1.0000</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">isTRUE</span>(<span class="fu">all.equal</span>(complement_sum, <span class="fl">1.0</span>)))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"   RESULT: Verified Mathematically (P(A^c) = 1 - P(A))</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   RESULT: Verified Mathematically (P(A^c) = 1 - P(A))</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verification 2: Additivity for Disjoint Sets P(B U C) == P(B) + P(C) == P(A)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>disjoint_sum <span class="ot">&lt;-</span> p_B <span class="sc">+</span> p_C</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"2. Disjoint Additivity Check (A = B U C):</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2. Disjoint Additivity Check (A = B U C):</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"   P(B) + P(C) = %.4f + %.4f = %.4f | P(A) = %.4f</span><span class="sc">\n</span><span class="st">"</span>, p_B, p_C, disjoint_sum, p_A))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   P(B) + P(C) = 0.1752 + 0.4558 = 0.6309 | P(A) = 0.6309</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">isTRUE</span>(<span class="fu">all.equal</span>(disjoint_sum, p_A)))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"   RESULT: Verified Mathematically (P(B U C) = P(B) + P(C))</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   RESULT: Verified Mathematically (P(B U C) = P(B) + P(C))</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verification 3: Monotonicity Property (B subset of A =&gt; P(B) &lt;= P(A))</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"3. Monotonicity Check (B subset of A):</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3. Monotonicity Check (B subset of A):</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"   P(B) [%.4f] &lt;= P(A) [%.4f] is %s (%.4f &lt;= %.4f)</span><span class="sc">\n</span><span class="st">"</span>, p_B, p_A, p_B <span class="sc">&lt;=</span> p_A, p_B, p_A))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   P(B) [0.1752] &lt;= P(A) [0.6309] is TRUE (0.1752 &lt;= 0.6309)</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(p_B <span class="sc">&lt;=</span> p_A)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"   RESULT: Verified Mathematically (P(B) &lt;= P(A))</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   RESULT: Verified Mathematically (P(B) &lt;= P(A))</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"STATUS: All Kolmogorov Probability Axioms Verified in R!</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>STATUS: All Kolmogorov Probability Axioms Verified in R!</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="sample-space-partition-visualization-ggplot2" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="sample-space-partition-visualization-ggplot2"><span class="header-section-number">7</span> Sample Space Partition Visualization (<code>ggplot2</code>)</h2>
+<p>We construct a publication-ready graphic of the sample space partition <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Ω</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>650</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> dekads</mtext></mrow></mrow><annotation encoding="application/x-tex">\Omega = 1,650\text{ dekads}</annotation></semantics></math>. The three disjoint event sets <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>A</mi><mi>c</mi></msup><annotation encoding="application/x-tex">A^c</annotation></semantics></math> (Dry), <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math> (Moderate), and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math> (Heavy) completely cover <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Ω</mi><annotation encoding="application/x-tex">\Omega</annotation></semantics></math> without overlap:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Ω</mi><mo>=</mo><msup><mi>A</mi><mi>c</mi></msup><mo>∪</mo><mi>C</mi><mo>∪</mo><mi>B</mi><mspace width="1.0em"></mspace><mo>⟹</mo><mspace width="1.0em"></mspace><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi mathvariant="normal">Ω</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>A</mi><mi>c</mi></msup><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>C</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1.0</mn></mrow><annotation encoding="application/x-tex">\Omega = A^c \cup C \cup B \quad \implies \quad P(\Omega) = P(A^c) + P(C) + P(B) = 1.0</annotation></semantics></math></p>
+<div class="callout callout-style-default callout-note callout-titled" title="R Micro-Hint 5: Grammar of Graphics with ggplot2">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>R Micro-Hint 5: Grammar of Graphics with ggplot2
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong><code>ggplot(data, aes(x, y, fill))</code></strong>: Initializes a plot canvas with mapping aesthetics.</li>
+<li><strong><code>geom_col()</code></strong>: Creates bar plots representing pre-computed summary values.</li>
+<li><strong><code>theme_minimal()</code></strong>: Applies a clean academic theme.</li>
+<li><strong><code>ggsave()</code></strong>: Exports publication-quality raster or vector images (<code>dpi = 300</code>).</li>
+</ul>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare summary data frame for plotting</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>df_plot <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">category =</span> <span class="fu">factor</span>(</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"Dry Dekad (A^c)"</span>, <span class="st">"Moderate Rain (C)"</span>, <span class="st">"Heavy Rain (B)"</span>),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Dry Dekad (A^c)"</span>, <span class="st">"Moderate Rain (C)"</span>, <span class="st">"Heavy Rain (B)"</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">probability =</span> <span class="fu">c</span>(p_Ac <span class="sc">*</span> <span class="dv">100</span>, p_C <span class="sc">*</span> <span class="dv">100</span>, p_B <span class="sc">*</span> <span class="dv">100</span>)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Render ggplot chart</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_plot, <span class="fu">aes</span>(<span class="at">x =</span> category, <span class="at">y =</span> probability, <span class="at">fill =</span> category)) <span class="sc">+</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.45</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"%.2f%%"</span>, probability)),</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>,</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">"bold"</span>,</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">3.8</span></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#e74c3c"</span>, <span class="st">"#3498db"</span>, <span class="st">"#2ecc71"</span>)) <span class="sc">+</span></span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">60</span>), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.05</span>))) <span class="sc">+</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Partition of Sample Space Ω (Kampala Rainfall 1981–2026, N = 1,650 Dekads)"</span>,</span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probability (%)"</span></span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb39-31"><a href="#cb39-31" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-32"><a href="#cb39-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-33"><a href="#cb39-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Export graphic for Episode 1.7 Academic Report Writing</span></span>
+<span id="cb39-34"><a href="#cb39-34" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"r_sample_space_partition.png"</span>, <span class="at">plot =</span> p, <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="fl">5.5</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span>
+<span id="cb39-35"><a href="#cb39-35" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Episode_1_5_probability_axioms_files/figure-html/visualize-partition-1.png" class="img-fluid figure-img" width="768"></p>
+<figcaption>Partition of Sample Space Ω (Kampala Rainfall 1981–2026, N = 1,650 Dekads)</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="empirical-insights" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="empirical-insights"><span class="header-section-number">8</span> Empirical Insights</h2>
+<p>An analysis of the <strong>Kampala Subnational Dekadal Rainfall Dataset (1981–2026)</strong> across <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>650</mn></mrow><annotation encoding="application/x-tex">N = 1,650</annotation></semantics></math> dekads yields the following key statistical properties:</p>
+<ul>
+<li><strong>High Baseline Probability of Rainfall (</strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>63.09</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">P(A) = 63.09\%</annotation></semantics></math>): Over the 45.8-year period, nearly two-thirds of all 10-day dekads in Kampala recorded at least <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow></mrow><annotation encoding="application/x-tex">20.0\text{ mm}</annotation></semantics></math> of rainfall (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mi>A</mi></msub><mo>=</mo><mn>1</mn><mo>,</mo><mn>041</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> dekads</mtext></mrow></mrow><annotation encoding="application/x-tex">n_A = 1,041\text{ dekads}</annotation></semantics></math>).</li>
+<li><strong>Moderate Rain Dominates the Sample Space (</strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>C</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>45.58</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">P(C) = 45.58\%</annotation></semantics></math>): Moderate dekadal rainfall (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow><mo>≤</mo><mtext mathvariant="normal">rfh</mtext><mo>&lt;</mo><mn>50.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow></mrow><annotation encoding="application/x-tex">20.0\text{ mm} \le \text{rfh} &lt; 50.0\text{ mm}</annotation></semantics></math>) accounts for the largest partition of the sample space (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mi>C</mi></msub><mo>=</mo><mn>752</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> dekads</mtext></mrow></mrow><annotation encoding="application/x-tex">n_C = 752\text{ dekads}</annotation></semantics></math>), representing standard operational moisture levels.</li>
+<li><strong>Low Frequency of Heavy Rain / Flood Risk (</strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>17.52</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">P(B) = 17.52\%</annotation></semantics></math>): Dekads with extreme precipitation (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">rfh</mtext><mo>≥</mo><mn>50.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow></mrow><annotation encoding="application/x-tex">\text{rfh} \ge 50.0\text{ mm}</annotation></semantics></math>) occur in less than 1 in 5 dekads (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mi>B</mi></msub><mo>=</mo><mn>289</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> dekads</mtext></mrow></mrow><annotation encoding="application/x-tex">n_B = 289\text{ dekads}</annotation></semantics></math>), confirming that extreme events occupy a strict subset of total wet dekads.</li>
+<li><strong>Dry Dekad Occurrence (</strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>A</mi><mi>c</mi></msup><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>36.91</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">P(A^c) = 36.91\%</annotation></semantics></math>): Dry dekads (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">rfh</mtext><mo>&lt;</mo><mn>20.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> mm</mtext></mrow></mrow><annotation encoding="application/x-tex">\text{rfh} &lt; 20.0\text{ mm}</annotation></semantics></math>) occur in approximately 37% of all observed periods (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><msup><mi>A</mi><mi>c</mi></msup></msub><mo>=</mo><mn>609</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> dekads</mtext></mrow></mrow><annotation encoding="application/x-tex">n_{A^c} = 609\text{ dekads}</annotation></semantics></math>), reflecting Kampala’s distinct bimodal dry season windows (January–February and June–July).</li>
+</ul>
+<hr>
+</section>
+<section id="mathematical-methodological-summary" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="mathematical-methodological-summary"><span class="header-section-number">9</span> Mathematical &amp; Methodological Summary</h2>
+<p>This Quarto document successfully bridges measure-theoretic probability theory with practical R data engineering:</p>
+<ol type="1">
+<li><strong>Axiomatic Soundness:</strong> Kolmogorov’s three probability axioms hold programmatically across the entire 45.8-year climate record:</li>
+</ol>
+<ul>
+<li><strong>Normalization:</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi mathvariant="normal">Ω</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>A</mi><mi>c</mi></msup><mo>∪</mo><mi>C</mi><mo>∪</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>36.91</mn><mi>%</mi><mo>+</mo><mn>45.58</mn><mi>%</mi><mo>+</mo><mn>17.52</mn><mi>%</mi><mo>=</mo><mn>100.0</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">P(\Omega) = P(A^c \cup C \cup B) = 36.91\% + 45.58\% + 17.52\% = 100.0\%</annotation></semantics></math>.</li>
+<li><strong>Complement Rule:</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>A</mi><mi>c</mi></msup><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.6309</mn><mo>+</mo><mn>0.3691</mn><mo>=</mo><mn>1.0000</mn></mrow><annotation encoding="application/x-tex">P(A) + P(A^c) = 0.6309 + 0.3691 = 1.0000</annotation></semantics></math>.</li>
+<li><strong>Additivity for Disjoint Sets:</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo>∪</mo><mi>C</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>C</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.1752</mn><mo>+</mo><mn>0.4558</mn><mo>=</mo><mn>0.6309</mn><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(B \cup C) = P(B) + P(C) = 0.1752 + 0.4558 = 0.6309 = P(A)</annotation></semantics></math>.</li>
+<li><strong>Monotonicity:</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="postfix">)</mo><mo>⟹</mo><mn>0.1752</mn><mo>≤</mo><mn>0.6309</mn></mrow><annotation encoding="application/x-tex">P(B) \le P(A) \implies 0.1752 \le 0.6309</annotation></semantics></math>.</li>
+</ul>
+<ol start="2" type="1">
+<li><strong>Efficiency of Tidy Vectorization:</strong> Using <code>dplyr::mutate()</code> combined with <code>mean()</code> provides an execution pattern that avoids slow R <code>for</code> loops when computing empirical probabilities across large vectors.</li>
+<li><strong>Reproducible Proofing:</strong> Leveraging R’s <code>stopifnot()</code> and <code>all.equal()</code> functions enforces mathematical verification in automated analytical pipelines, preventing bad data or silent errors from passing downstream into policy models.</li>
+</ol>
+<hr>
+</section>
+<section id="institutional-practical-recommendations" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="institutional-practical-recommendations"><span class="header-section-number">10</span> Institutional &amp; Practical Recommendations</h2>
+<section id="for-statistical-researchers-students" class="level3" data-number="10.1">
+<h3 data-number="10.1" class="anchored" data-anchor-id="for-statistical-researchers-students"><span class="header-section-number">10.1</span> For Statistical Researchers &amp; Students</h3>
+<ul>
+<li><strong>Adopt Explicit Vector Extraction:</strong> Always isolate target metric columns into dedicated vectors (e.g., <code>rfh_mm &lt;- df$rfh</code>) before applying logical comparison masks to maintain clean, readable script architecture.</li>
+<li><strong>Export Visual Assets for Institutional Reports:</strong> Save high-resolution chart exports (<code>ggsave("r_sample_space_partition.png", dpi = 300)</code>) directly into structured assets folders for cross-referencing in Microsoft Word and LaTeX document compilation (<strong>Episode 1.7</strong>).</li>
+</ul>
+</section>
+<section id="for-institutional-policy-analysts-ubos-npa-bank-of-uganda" class="level3" data-number="10.2">
+<h3 data-number="10.2" class="anchored" data-anchor-id="for-institutional-policy-analysts-ubos-npa-bank-of-uganda"><span class="header-section-number">10.2</span> For Institutional Policy Analysts (UBOS, NPA, Bank of Uganda)</h3>
+<ul>
+<li><strong>Integrate Dekadal Baselines into Climate Risk Planning:</strong> Utilize the baseline probability <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">rfh</mtext><mo>≥</mo><mn>20</mn><mtext mathvariant="normal">mm</mtext><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>63.09</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">P(\text{rfh} \ge 20\text{mm}) = 63.09\%</annotation></semantics></math> and heavy rainfall risk <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">rfh</mtext><mo>≥</mo><mn>50</mn><mtext mathvariant="normal">mm</mtext><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>17.52</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">P(\text{rfh} \ge 50\text{mm}) = 17.52\%</annotation></semantics></math> to anchor agricultural monitoring, urban drainage planning under Uganda’s <strong>NDP IV</strong>, and disaster resilience frameworks.</li>
+<li><strong>Maintain Automated Audit Trails:</strong> Embed programmatic <code>stopifnot()</code> checks within automated data pipeline R scripts to verify statistical properties automatically whenever fresh dekadal data feeds are appended from CHIRPS or WFP sources.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="nb" class="level2" data-number="11">
+<h2 data-number="11" class="anchored" data-anchor-id="nb"><span class="header-section-number">11</span> NB:</h2>
+<ul>
+<li><p>This document was generated with a CLI tool called Quarto. More information on it is in Hardley Wickams R4DS (2e), chapter 28.</p></li>
+<li><p>The code script is on github in case you want to reproduce it.</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/kjkStatScript_Like_Comment_Subscribe.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" width="400"></p>
+</figure>
+</div>
+<!-- -->
+
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "KJK StatScript — Series 1: Foundations of Quantitative Reasoning"</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "Module 1: What Is Probability? | Episode 1.5: R &amp; Quarto Implementation : Proving Probability Axioms with Real Data"</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Kyagambiddwa Joseph Kelly"</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2026-11-11"</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="co">    number-sections: true</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: cosmo</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: false</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="co">    fig-width: 8</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="co">    fig-height: 5.5</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co">    html-math-method: mathml</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: true</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co">  warning: false</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="co">  message: false</span></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a><span class="fu">## About the Course</span></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>**KJK StatScript** is an educational platform designed to bridge theoretical probability, computational data science, and East African macroeconomic policy.</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Module Focus:** Moving from abstract textbook examples (dice, cards, urns) to empirical, measure-theoretic probability grounded in real-world data.</span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Pedagogical Approach:** **"Just-In-Time" Syntax Callouts.** Programming concepts are introduced at the exact moment they are required to solve a statistical problem, ensuring complete beginners can follow along in RStudio without losing sight of the underlying mathematics.</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Core Objective of Episode 1.5:** To translate Kolmogorov's Axioms of Probability—established theoretically in Episode 1.2—into executable R code (<span class="in">`tidyverse`</span>, <span class="in">`ggplot2`</span>) within a Quarto publication environment using a 45.8-year East African climate time series.</span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## About the Dataset</span></span>
+<span id="cb40-34"><a href="#cb40-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-35"><a href="#cb40-35" aria-hidden="true" tabindex="-1"></a><span class="fu">### Overview</span></span>
+<span id="cb40-36"><a href="#cb40-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-37"><a href="#cb40-37" aria-hidden="true" tabindex="-1"></a>This document analyzes the **Kampala Subnational Dekadal Rainfall Dataset (1981–2026)**, derived from the United Nations World Food Programme (WFP) Vulnerability Analysis and Mapping (VAM) data engine and the Climate Hazards Group InfraRed Precipitation with Stations (**CHIRPS**).</span>
+<span id="cb40-38"><a href="#cb40-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-39"><a href="#cb40-39" aria-hidden="true" tabindex="-1"></a><span class="fu">### Technical &amp; Geographic Specifications</span></span>
+<span id="cb40-40"><a href="#cb40-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-41"><a href="#cb40-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Geographic Unit:** Kampala District, Uganda</span>
+<span id="cb40-42"><a href="#cb40-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Administrative Hierarchy:** Administrative Level 2 (<span class="in">`adm_level = 2`</span>)</span>
+<span id="cb40-43"><a href="#cb40-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**UN OCHA Place Code (PCODE):** <span class="in">`UG1002`</span> (<span class="in">`adm_id = 999571`</span>)</span>
+<span id="cb40-44"><a href="#cb40-44" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Spatial Grid Resolution:** <span class="in">`n_pixels = 19`</span> ($\approx$ 475 $km^2$ spatial aggregation across 5 km * 5 km satellite cells)</span>
+<span id="cb40-45"><a href="#cb40-45" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Temporal Resolution:** **Dekads (10-Day Intervals)**</span>
+<span id="cb40-46"><a href="#cb40-46" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Dekad 1: Days 1–10 of the month (<span class="in">`YYYY-MM-01`</span>)</span>
+<span id="cb40-47"><a href="#cb40-47" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Dekad 2: Days 11–20 of the month (<span class="in">`YYYY-MM-11`</span>)</span>
+<span id="cb40-48"><a href="#cb40-48" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Dekad 3: Day 21 to the end of the month (<span class="in">`YYYY-MM-21`</span>)</span>
+<span id="cb40-49"><a href="#cb40-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Sample Space Dimension (**N): **1,650 dekads** (36 dekads/year across 45.8 years from January 1981 to October 2026)</span>
+<span id="cb40-50"><a href="#cb40-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-51"><a href="#cb40-51" aria-hidden="true" tabindex="-1"></a><span class="fu">### Data Dictionary</span></span>
+<span id="cb40-52"><a href="#cb40-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-53"><a href="#cb40-53" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Variable Name <span class="pp">|</span> Data Type <span class="pp">|</span> Units / Format <span class="pp">|</span> Description <span class="pp">|</span></span>
+<span id="cb40-54"><a href="#cb40-54" aria-hidden="true" tabindex="-1"></a><span class="pp">|:-----------------|:-----------------|:-----------------|:-----------------|</span></span>
+<span id="cb40-55"><a href="#cb40-55" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`date`</span> <span class="pp">|</span> <span class="in">`character`</span> / <span class="in">`Date`</span> <span class="pp">|</span> <span class="in">`MM/DD/YYYY`</span> <span class="pp">|</span> Start date of the 10-day dekad <span class="pp">|</span></span>
+<span id="cb40-56"><a href="#cb40-56" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`adm_level`</span> <span class="pp">|</span> <span class="in">`integer`</span> <span class="pp">|</span> Category (<span class="in">`2`</span>) <span class="pp">|</span> Administrative boundary tier (Level 2 = District) <span class="pp">|</span></span>
+<span id="cb40-57"><a href="#cb40-57" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`adm_id`</span> <span class="pp">|</span> <span class="in">`integer`</span> <span class="pp">|</span> Numeric ID <span class="pp">|</span> Unique WFP database identifier (<span class="in">`999571`</span>) <span class="pp">|</span></span>
+<span id="cb40-58"><a href="#cb40-58" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`PCODE`</span> <span class="pp">|</span> <span class="in">`character`</span> <span class="pp">|</span> String Code <span class="pp">|</span> UN OCHA standardized spatial code (<span class="in">`UG1002`</span>) <span class="pp">|</span></span>
+<span id="cb40-59"><a href="#cb40-59" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`n_pixels`</span> <span class="pp">|</span> <span class="in">`integer`</span> <span class="pp">|</span> Integer Count <span class="pp">|</span> Number of satellite grid cells covering the district (<span class="in">`19`</span>) <span class="pp">|</span></span>
+<span id="cb40-60"><a href="#cb40-60" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`rfh`</span> <span class="pp">|</span> <span class="in">`double`</span> <span class="pp">|</span> Millimeters ($mm$) <span class="pp">|</span> **Rainfall Height:** Observed dekadal precipitation <span class="pp">|</span></span>
+<span id="cb40-61"><a href="#cb40-61" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`rfh_avg`</span> <span class="pp">|</span> <span class="in">`double`</span> <span class="pp">|</span> Millimeters ($mm$) <span class="pp">|</span> **Historical Baseline:** 30-year dekadal mean <span class="pp">|</span></span>
+<span id="cb40-62"><a href="#cb40-62" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`rfq`</span> <span class="pp">|</span> <span class="in">`double`</span> <span class="pp">|</span> Percentage ($\%$) <span class="pp">|</span> **Rainfall Anomaly Ratio:** $\left(\frac{\text{rfh}}{\text{rfh<span class="sc">\_</span>avg}}\right) \times 100\%$ <span class="pp">|</span></span>
+<span id="cb40-63"><a href="#cb40-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-64"><a href="#cb40-64" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb40-65"><a href="#cb40-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-66"><a href="#cb40-66" aria-hidden="true" tabindex="-1"></a><span class="fu">## Environment Setup &amp; Data Loading</span></span>
+<span id="cb40-67"><a href="#cb40-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-68"><a href="#cb40-68" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="R Micro-Hint 1: Packages &amp; Tidy Data Frames"}</span>
+<span id="cb40-69"><a href="#cb40-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`library(tidyverse)`**: Loads the Tidyverse ecosystem, including <span class="in">`dplyr`</span> (data manipulation), <span class="in">`readr`</span> (fast data loading), and <span class="in">`ggplot2`</span> (graphics).</span>
+<span id="cb40-70"><a href="#cb40-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`read_csv()`**: Imports CSV files into a **tibble** (an enhanced R data frame that prints cleanly without flooding your console).</span>
+<span id="cb40-71"><a href="#cb40-71" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`nrow()`**: Measures the total number of rows (N) in an R data object.</span>
+<span id="cb40-72"><a href="#cb40-72" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb40-73"><a href="#cb40-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-76"><a href="#cb40-76" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-77"><a href="#cb40-77" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup-data</span></span>
+<span id="cb40-78"><a href="#cb40-78" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb40-79"><a href="#cb40-79" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb40-80"><a href="#cb40-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-81"><a href="#cb40-81" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb40-82"><a href="#cb40-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-83"><a href="#cb40-83" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Kampala Dekadal Dataset (1981 - 2026)</span></span>
+<span id="cb40-84"><a href="#cb40-84" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"Kampala_Dekad_Data_since_1981_to_2026.csv"</span>)</span>
+<span id="cb40-85"><a href="#cb40-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-86"><a href="#cb40-86" aria-hidden="true" tabindex="-1"></a><span class="co"># Measure Total Sample Space Size (N = 1,650 dekads)</span></span>
+<span id="cb40-87"><a href="#cb40-87" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">nrow</span>(df)</span>
+<span id="cb40-88"><a href="#cb40-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-89"><a href="#cb40-89" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Total Sample Space Size (N):"</span>, N, <span class="st">"dekads</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb40-90"><a href="#cb40-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-91"><a href="#cb40-91" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview data structure</span></span>
+<span id="cb40-92"><a href="#cb40-92" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df <span class="sc">%&gt;%</span> <span class="fu">select</span>(date, PCODE, n_pixels, rfh, rfh_avg, rfq), <span class="dv">5</span>)</span>
+<span id="cb40-93"><a href="#cb40-93" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-94"><a href="#cb40-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-95"><a href="#cb40-95" aria-hidden="true" tabindex="-1"></a><span class="fu">## Variable Selection &amp; Event Masking</span></span>
+<span id="cb40-96"><a href="#cb40-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-97"><a href="#cb40-97" aria-hidden="true" tabindex="-1"></a>From Episode 1.2, we define our sample space ($\Omega$ or S) as all observed Kampala dekads ($N = 1,650$). We set up the following disjoint and non-disjoint events based on rainfall height extracted into a dedicated vector (<span class="in">`rfh_mm &lt;- df$rfh`</span>):</span>
+<span id="cb40-98"><a href="#cb40-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-99"><a href="#cb40-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Event** $A$ (Wet Dekad): $\text{rfh<span class="sc">\_</span>mm} \ge 20.0\text{ mm}$</span>
+<span id="cb40-100"><a href="#cb40-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Event** $A^c$ (Dry / Low-Rain Dekad): $\text{rfh<span class="sc">\_</span>mm} &lt; 20.0\text{ mm}$</span>
+<span id="cb40-101"><a href="#cb40-101" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Event** $B$ (Heavy Rain Dekad): $\text{rfh<span class="sc">\_</span>mm} \ge 50.0\text{ mm}$</span>
+<span id="cb40-102"><a href="#cb40-102" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Event** $C$ (Moderate Rain Dekad): $20.0\text{ mm} \le \text{rfh<span class="sc">\_</span>mm} &lt; 50.0\text{ mm}$</span>
+<span id="cb40-103"><a href="#cb40-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-104"><a href="#cb40-104" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="R Micro-Hint 2: Vector Extraction &amp; Tidy Mutation"}</span>
+<span id="cb40-105"><a href="#cb40-105" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`rfh_mm &lt;- df$rfh`**: The <span class="in">`$`</span> operator extracts a single column as an atomic vector.</span>
+<span id="cb40-106"><a href="#cb40-106" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`mutate()`**: Adds new variables or modifies existing ones while preserving existing columns.</span>
+<span id="cb40-107"><a href="#cb40-107" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Logical Operators (`&gt;=`, `&lt;`, `&amp;`)**: Evaluate conditions element-by-element, returning logical vectors of <span class="in">`TRUE`</span> and <span class="in">`FALSE`</span>.</span>
+<span id="cb40-108"><a href="#cb40-108" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb40-109"><a href="#cb40-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-112"><a href="#cb40-112" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-113"><a href="#cb40-113" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: event-masking</span></span>
+<span id="cb40-114"><a href="#cb40-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-115"><a href="#cb40-115" aria-hidden="true" tabindex="-1"></a><span class="co"># Select target precipitation variable</span></span>
+<span id="cb40-116"><a href="#cb40-116" aria-hidden="true" tabindex="-1"></a>rfh_mm <span class="ot">&lt;-</span> df<span class="sc">$</span>rfh</span>
+<span id="cb40-117"><a href="#cb40-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-118"><a href="#cb40-118" aria-hidden="true" tabindex="-1"></a><span class="co"># Define boolean event vectors inside data frame</span></span>
+<span id="cb40-119"><a href="#cb40-119" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb40-120"><a href="#cb40-120" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb40-121"><a href="#cb40-121" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_wet      =</span> rfh_mm <span class="sc">&gt;=</span> <span class="fl">20.0</span>,                        <span class="co"># Event A</span></span>
+<span id="cb40-122"><a href="#cb40-122" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_dry      =</span> rfh_mm <span class="sc">&lt;</span> <span class="fl">20.0</span>,                         <span class="co"># Event A^c</span></span>
+<span id="cb40-123"><a href="#cb40-123" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_heavy    =</span> rfh_mm <span class="sc">&gt;=</span> <span class="fl">50.0</span>,                        <span class="co"># Event B</span></span>
+<span id="cb40-124"><a href="#cb40-124" aria-hidden="true" tabindex="-1"></a>    <span class="at">is_moderate =</span> (rfh_mm <span class="sc">&gt;=</span> <span class="fl">20.0</span>) <span class="sc">&amp;</span> (rfh_mm <span class="sc">&lt;</span> <span class="fl">50.0</span>)     <span class="co"># Event C</span></span>
+<span id="cb40-125"><a href="#cb40-125" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-126"><a href="#cb40-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-127"><a href="#cb40-127" aria-hidden="true" tabindex="-1"></a><span class="co"># Display sample event mask table</span></span>
+<span id="cb40-128"><a href="#cb40-128" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df <span class="sc">%&gt;%</span> <span class="fu">select</span>(rfh, is_wet, is_dry, is_heavy, is_moderate), <span class="dv">10</span>)</span>
+<span id="cb40-129"><a href="#cb40-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-130"><a href="#cb40-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-131"><a href="#cb40-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-132"><a href="#cb40-132" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb40-133"><a href="#cb40-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-134"><a href="#cb40-134" aria-hidden="true" tabindex="-1"></a><span class="fu">## Computing Empirical Probabilities</span></span>
+<span id="cb40-135"><a href="#cb40-135" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="R Micro-Hint 3: Logical Averaging with mean() and summarise()"}</span>
+<span id="cb40-136"><a href="#cb40-136" aria-hidden="true" tabindex="-1"></a>In R, <span class="in">`TRUE`</span> coerces to <span class="in">`1`</span> and <span class="in">`FALSE`</span> coerces to <span class="in">`0`</span>. Passing a logical vector to <span class="in">`mean()`</span> calculates $\frac{\sum \text{TRUE}}{N}$, yielding the empirical probability $P(E)$. <span class="in">`summarise()`</span> collapses thousands of rows into a single summary table.</span>
+<span id="cb40-137"><a href="#cb40-137" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb40-138"><a href="#cb40-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-139"><a href="#cb40-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-142"><a href="#cb40-142" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-143"><a href="#cb40-143" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compute-probabilities</span></span>
+<span id="cb40-144"><a href="#cb40-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-145"><a href="#cb40-145" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize proportions and absolute event counts</span></span>
+<span id="cb40-146"><a href="#cb40-146" aria-hidden="true" tabindex="-1"></a>prob_summary <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb40-147"><a href="#cb40-147" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb40-148"><a href="#cb40-148" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_A  =</span> <span class="fu">mean</span>(is_wet),</span>
+<span id="cb40-149"><a href="#cb40-149" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_Ac =</span> <span class="fu">mean</span>(is_dry),</span>
+<span id="cb40-150"><a href="#cb40-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_B  =</span> <span class="fu">mean</span>(is_heavy),</span>
+<span id="cb40-151"><a href="#cb40-151" aria-hidden="true" tabindex="-1"></a>    <span class="at">p_C  =</span> <span class="fu">mean</span>(is_moderate),</span>
+<span id="cb40-152"><a href="#cb40-152" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_A  =</span> <span class="fu">sum</span>(is_wet),</span>
+<span id="cb40-153"><a href="#cb40-153" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_Ac =</span> <span class="fu">sum</span>(is_dry),</span>
+<span id="cb40-154"><a href="#cb40-154" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_B  =</span> <span class="fu">sum</span>(is_heavy),</span>
+<span id="cb40-155"><a href="#cb40-155" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_C  =</span> <span class="fu">sum</span>(is_moderate)</span>
+<span id="cb40-156"><a href="#cb40-156" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-157"><a href="#cb40-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-158"><a href="#cb40-158" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract scalar probabilities</span></span>
+<span id="cb40-159"><a href="#cb40-159" aria-hidden="true" tabindex="-1"></a>p_A  <span class="ot">&lt;-</span> prob_summary<span class="sc">$</span>p_A</span>
+<span id="cb40-160"><a href="#cb40-160" aria-hidden="true" tabindex="-1"></a>p_Ac <span class="ot">&lt;-</span> prob_summary<span class="sc">$</span>p_Ac</span>
+<span id="cb40-161"><a href="#cb40-161" aria-hidden="true" tabindex="-1"></a>p_B  <span class="ot">&lt;-</span> prob_summary<span class="sc">$</span>p_B</span>
+<span id="cb40-162"><a href="#cb40-162" aria-hidden="true" tabindex="-1"></a>p_C  <span class="ot">&lt;-</span> prob_summary<span class="sc">$</span>p_C</span>
+<span id="cb40-163"><a href="#cb40-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-164"><a href="#cb40-164" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Empirical Dekadal Probabilities (N = 1,650)</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb40-165"><a href="#cb40-165" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(A)   [Wet Dekad (&gt;=20mm)]:       %.4f  (%.2f%%) | Count: %d</span><span class="sc">\n</span><span class="st">"</span>, p_A, p_A <span class="sc">*</span> <span class="dv">100</span>, prob_summary<span class="sc">$</span>n_A))</span>
+<span id="cb40-166"><a href="#cb40-166" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(A^c) [Dry Dekad (&lt;20mm)]:        %.4f  (%.2f%%) | Count: %d</span><span class="sc">\n</span><span class="st">"</span>, p_Ac, p_Ac <span class="sc">*</span> <span class="dv">100</span>, prob_summary<span class="sc">$</span>n_Ac))</span>
+<span id="cb40-167"><a href="#cb40-167" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(B)   [Heavy Rain (&gt;=50mm)]:      %.4f  (%.2f%%) | Count: %d</span><span class="sc">\n</span><span class="st">"</span>, p_B, p_B <span class="sc">*</span> <span class="dv">100</span>, prob_summary<span class="sc">$</span>n_B))</span>
+<span id="cb40-168"><a href="#cb40-168" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(C)   [Moderate Rain (20-50mm)]:  %.4f  (%.2f%%) | Count: %d</span><span class="sc">\n</span><span class="st">"</span>, p_C, p_C <span class="sc">*</span> <span class="dv">100</span>, prob_summary<span class="sc">$</span>n_C))</span>
+<span id="cb40-169"><a href="#cb40-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-170"><a href="#cb40-170" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-171"><a href="#cb40-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-172"><a href="#cb40-172" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb40-173"><a href="#cb40-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-174"><a href="#cb40-174" aria-hidden="true" tabindex="-1"></a><span class="fu">## Programmatic Verification of Kolmogorov's Axioms</span></span>
+<span id="cb40-175"><a href="#cb40-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-176"><a href="#cb40-176" aria-hidden="true" tabindex="-1"></a>We test whether our empirical estimates satisfy Kolmogorov's foundational rules derived in Episode 1.2:</span>
+<span id="cb40-177"><a href="#cb40-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-178"><a href="#cb40-178" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Axiom 1 &amp; 2 (Non-negativity &amp; Normalization):** $0 \le P(E) \le 1$ and $P(\Omega) = 1.0$.</span>
+<span id="cb40-179"><a href="#cb40-179" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Proof 1 — The Complement Rule:** $P(A) + P(A^c) = 1.0$.</span>
+<span id="cb40-180"><a href="#cb40-180" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Proof 2 — Additivity for Disjoint Sets:** Since $B \cap C = \emptyset$ and $A = B \cup C$:</span>
+<span id="cb40-181"><a href="#cb40-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-182"><a href="#cb40-182" aria-hidden="true" tabindex="-1"></a>$$P(A) = P(B \cup C) = P(B) + P(C)$$</span>
+<span id="cb40-183"><a href="#cb40-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-184"><a href="#cb40-184" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Proof 3 — Monotonicity:** Since $B \subseteq A$ (Heavy rain is a subset of Wet dekads):</span>
+<span id="cb40-185"><a href="#cb40-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-186"><a href="#cb40-186" aria-hidden="true" tabindex="-1"></a>$$P(B) \le P(A)$$</span>
+<span id="cb40-187"><a href="#cb40-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-188"><a href="#cb40-188" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="R Micro-Hint 4: Safe Equality Testing with all.equal() and stopifnot()"}</span>
+<span id="cb40-189"><a href="#cb40-189" aria-hidden="true" tabindex="-1"></a>Floating-point arithmetic can introduce microscopic rounding differences. In R, <span class="in">`all.equal(x, y)`</span> checks if numbers are equal within machine precision tolerances, while <span class="in">`stopifnot()`</span> halts script execution if a condition is <span class="in">`FALSE`</span> (R's native equivalent of Python's <span class="in">`assert`</span>).</span>
+<span id="cb40-190"><a href="#cb40-190" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb40-191"><a href="#cb40-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-192"><a href="#cb40-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-195"><a href="#cb40-195" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-196"><a href="#cb40-196" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: verify-axioms</span></span>
+<span id="cb40-197"><a href="#cb40-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-198"><a href="#cb40-198" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Kolmogorov Axiom Verifications </span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb40-199"><a href="#cb40-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-200"><a href="#cb40-200" aria-hidden="true" tabindex="-1"></a><span class="co"># Verification 1: Complement Rule P(A) + P(A^c) == 1.0</span></span>
+<span id="cb40-201"><a href="#cb40-201" aria-hidden="true" tabindex="-1"></a>complement_sum <span class="ot">&lt;-</span> p_A <span class="sc">+</span> p_Ac</span>
+<span id="cb40-202"><a href="#cb40-202" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"1. Complement Rule Check:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb40-203"><a href="#cb40-203" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"   P(A) + P(A^c) = %.4f + %.4f = %.4f</span><span class="sc">\n</span><span class="st">"</span>, p_A, p_Ac, complement_sum))</span>
+<span id="cb40-204"><a href="#cb40-204" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">isTRUE</span>(<span class="fu">all.equal</span>(complement_sum, <span class="fl">1.0</span>)))</span>
+<span id="cb40-205"><a href="#cb40-205" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"   RESULT: Verified Mathematically (P(A^c) = 1 - P(A))</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb40-206"><a href="#cb40-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-207"><a href="#cb40-207" aria-hidden="true" tabindex="-1"></a><span class="co"># Verification 2: Additivity for Disjoint Sets P(B U C) == P(B) + P(C) == P(A)</span></span>
+<span id="cb40-208"><a href="#cb40-208" aria-hidden="true" tabindex="-1"></a>disjoint_sum <span class="ot">&lt;-</span> p_B <span class="sc">+</span> p_C</span>
+<span id="cb40-209"><a href="#cb40-209" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"2. Disjoint Additivity Check (A = B U C):</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb40-210"><a href="#cb40-210" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"   P(B) + P(C) = %.4f + %.4f = %.4f | P(A) = %.4f</span><span class="sc">\n</span><span class="st">"</span>, p_B, p_C, disjoint_sum, p_A))</span>
+<span id="cb40-211"><a href="#cb40-211" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">isTRUE</span>(<span class="fu">all.equal</span>(disjoint_sum, p_A)))</span>
+<span id="cb40-212"><a href="#cb40-212" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"   RESULT: Verified Mathematically (P(B U C) = P(B) + P(C))</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb40-213"><a href="#cb40-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-214"><a href="#cb40-214" aria-hidden="true" tabindex="-1"></a><span class="co"># Verification 3: Monotonicity Property (B subset of A =&gt; P(B) &lt;= P(A))</span></span>
+<span id="cb40-215"><a href="#cb40-215" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"3. Monotonicity Check (B subset of A):</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb40-216"><a href="#cb40-216" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"   P(B) [%.4f] &lt;= P(A) [%.4f] is %s (%.4f &lt;= %.4f)</span><span class="sc">\n</span><span class="st">"</span>, p_B, p_A, p_B <span class="sc">&lt;=</span> p_A, p_B, p_A))</span>
+<span id="cb40-217"><a href="#cb40-217" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(p_B <span class="sc">&lt;=</span> p_A)</span>
+<span id="cb40-218"><a href="#cb40-218" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"   RESULT: Verified Mathematically (P(B) &lt;= P(A))</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb40-219"><a href="#cb40-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-220"><a href="#cb40-220" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"STATUS: All Kolmogorov Probability Axioms Verified in R!</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb40-221"><a href="#cb40-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-222"><a href="#cb40-222" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-223"><a href="#cb40-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-224"><a href="#cb40-224" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb40-225"><a href="#cb40-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-226"><a href="#cb40-226" aria-hidden="true" tabindex="-1"></a><span class="fu">## Sample Space Partition Visualization (`ggplot2`)</span></span>
+<span id="cb40-227"><a href="#cb40-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-228"><a href="#cb40-228" aria-hidden="true" tabindex="-1"></a>We construct a publication-ready graphic of the sample space partition $\Omega = 1,650\text{ dekads}$. The three disjoint event sets $A^c$ (Dry), $C$ (Moderate), and $B$ (Heavy) completely cover $\Omega$ without overlap:</span>
+<span id="cb40-229"><a href="#cb40-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-230"><a href="#cb40-230" aria-hidden="true" tabindex="-1"></a>$$\Omega = A^c \cup C \cup B \quad \implies \quad P(\Omega) = P(A^c) + P(C) + P(B) = 1.0$$</span>
+<span id="cb40-231"><a href="#cb40-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-232"><a href="#cb40-232" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="R Micro-Hint 5: Grammar of Graphics with ggplot2"}</span>
+<span id="cb40-233"><a href="#cb40-233" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`ggplot(data, aes(x, y, fill))`**: Initializes a plot canvas with mapping aesthetics.</span>
+<span id="cb40-234"><a href="#cb40-234" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`geom_col()`**: Creates bar plots representing pre-computed summary values.</span>
+<span id="cb40-235"><a href="#cb40-235" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`theme_minimal()`**: Applies a clean academic theme.</span>
+<span id="cb40-236"><a href="#cb40-236" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`ggsave()`**: Exports publication-quality raster or vector images (<span class="in">`dpi = 300`</span>).</span>
+<span id="cb40-237"><a href="#cb40-237" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb40-238"><a href="#cb40-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-239"><a href="#cb40-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-242"><a href="#cb40-242" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb40-243"><a href="#cb40-243" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: visualize-partition</span></span>
+<span id="cb40-244"><a href="#cb40-244" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Partition of Sample Space Ω (Kampala Rainfall 1981–2026, N = 1,650 Dekads)"</span></span>
+<span id="cb40-245"><a href="#cb40-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-246"><a href="#cb40-246" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare summary data frame for plotting</span></span>
+<span id="cb40-247"><a href="#cb40-247" aria-hidden="true" tabindex="-1"></a>df_plot <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb40-248"><a href="#cb40-248" aria-hidden="true" tabindex="-1"></a>  <span class="at">category =</span> <span class="fu">factor</span>(</span>
+<span id="cb40-249"><a href="#cb40-249" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"Dry Dekad (A^c)"</span>, <span class="st">"Moderate Rain (C)"</span>, <span class="st">"Heavy Rain (B)"</span>),</span>
+<span id="cb40-250"><a href="#cb40-250" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Dry Dekad (A^c)"</span>, <span class="st">"Moderate Rain (C)"</span>, <span class="st">"Heavy Rain (B)"</span>)</span>
+<span id="cb40-251"><a href="#cb40-251" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb40-252"><a href="#cb40-252" aria-hidden="true" tabindex="-1"></a>  <span class="at">probability =</span> <span class="fu">c</span>(p_Ac <span class="sc">*</span> <span class="dv">100</span>, p_C <span class="sc">*</span> <span class="dv">100</span>, p_B <span class="sc">*</span> <span class="dv">100</span>)</span>
+<span id="cb40-253"><a href="#cb40-253" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-254"><a href="#cb40-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-255"><a href="#cb40-255" aria-hidden="true" tabindex="-1"></a><span class="co"># Render ggplot chart</span></span>
+<span id="cb40-256"><a href="#cb40-256" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_plot, <span class="fu">aes</span>(<span class="at">x =</span> category, <span class="at">y =</span> probability, <span class="at">fill =</span> category)) <span class="sc">+</span></span>
+<span id="cb40-257"><a href="#cb40-257" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.45</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb40-258"><a href="#cb40-258" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb40-259"><a href="#cb40-259" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"%.2f%%"</span>, probability)),</span>
+<span id="cb40-260"><a href="#cb40-260" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>,</span>
+<span id="cb40-261"><a href="#cb40-261" aria-hidden="true" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">"bold"</span>,</span>
+<span id="cb40-262"><a href="#cb40-262" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">3.8</span></span>
+<span id="cb40-263"><a href="#cb40-263" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb40-264"><a href="#cb40-264" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#e74c3c"</span>, <span class="st">"#3498db"</span>, <span class="st">"#2ecc71"</span>)) <span class="sc">+</span></span>
+<span id="cb40-265"><a href="#cb40-265" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">60</span>), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.05</span>))) <span class="sc">+</span></span>
+<span id="cb40-266"><a href="#cb40-266" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb40-267"><a href="#cb40-267" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Partition of Sample Space Ω (Kampala Rainfall 1981–2026, N = 1,650 Dekads)"</span>,</span>
+<span id="cb40-268"><a href="#cb40-268" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb40-269"><a href="#cb40-269" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probability (%)"</span></span>
+<span id="cb40-270"><a href="#cb40-270" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb40-271"><a href="#cb40-271" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb40-272"><a href="#cb40-272" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb40-273"><a href="#cb40-273" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb40-274"><a href="#cb40-274" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb40-275"><a href="#cb40-275" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb40-276"><a href="#cb40-276" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-277"><a href="#cb40-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-278"><a href="#cb40-278" aria-hidden="true" tabindex="-1"></a><span class="co"># Export graphic for Episode 1.7 Academic Report Writing</span></span>
+<span id="cb40-279"><a href="#cb40-279" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"r_sample_space_partition.png"</span>, <span class="at">plot =</span> p, <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="fl">5.5</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span>
+<span id="cb40-280"><a href="#cb40-280" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span>
+<span id="cb40-281"><a href="#cb40-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-282"><a href="#cb40-282" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb40-283"><a href="#cb40-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-284"><a href="#cb40-284" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb40-285"><a href="#cb40-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-286"><a href="#cb40-286" aria-hidden="true" tabindex="-1"></a><span class="fu">## Empirical Insights</span></span>
+<span id="cb40-287"><a href="#cb40-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-288"><a href="#cb40-288" aria-hidden="true" tabindex="-1"></a>An analysis of the **Kampala Subnational Dekadal Rainfall Dataset (1981–2026)** across $N = 1,650$ dekads yields the following key statistical properties:</span>
+<span id="cb40-289"><a href="#cb40-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-290"><a href="#cb40-290" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**High Baseline Probability of Rainfall (**$P(A) = 63.09\%$): Over the 45.8-year period, nearly two-thirds of all 10-day dekads in Kampala recorded at least $20.0\text{ mm}$ of rainfall ($n_A = 1,041\text{ dekads}$).</span>
+<span id="cb40-291"><a href="#cb40-291" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Moderate Rain Dominates the Sample Space (**$P(C) = 45.58\%$): Moderate dekadal rainfall ($20.0\text{ mm} \le \text{rfh} &lt; 50.0\text{ mm}$) accounts for the largest partition of the sample space ($n_C = 752\text{ dekads}$), representing standard operational moisture levels.</span>
+<span id="cb40-292"><a href="#cb40-292" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Low Frequency of Heavy Rain / Flood Risk (**$P(B) = 17.52\%$): Dekads with extreme precipitation ($\text{rfh} \ge 50.0\text{ mm}$) occur in less than 1 in 5 dekads ($n_B = 289\text{ dekads}$), confirming that extreme events occupy a strict subset of total wet dekads.</span>
+<span id="cb40-293"><a href="#cb40-293" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Dry Dekad Occurrence (**$P(A^c) = 36.91\%$): Dry dekads ($\text{rfh} &lt; 20.0\text{ mm}$) occur in approximately 37% of all observed periods ($n_{A^c} = 609\text{ dekads}$), reflecting Kampala's distinct bimodal dry season windows (January–February and June–July).</span>
+<span id="cb40-294"><a href="#cb40-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-295"><a href="#cb40-295" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb40-296"><a href="#cb40-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-297"><a href="#cb40-297" aria-hidden="true" tabindex="-1"></a><span class="fu">## Mathematical &amp; Methodological Summary</span></span>
+<span id="cb40-298"><a href="#cb40-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-299"><a href="#cb40-299" aria-hidden="true" tabindex="-1"></a>This Quarto document successfully bridges measure-theoretic probability theory with practical R data engineering:</span>
+<span id="cb40-300"><a href="#cb40-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-301"><a href="#cb40-301" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Axiomatic Soundness:** Kolmogorov's three probability axioms hold programmatically across the entire 45.8-year climate record:</span>
+<span id="cb40-302"><a href="#cb40-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-303"><a href="#cb40-303" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Normalization:** $P(\Omega) = P(A^c \cup C \cup B) = 36.91\% + 45.58\% + 17.52\% = 100.0\%$.</span>
+<span id="cb40-304"><a href="#cb40-304" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Complement Rule:** $P(A) + P(A^c) = 0.6309 + 0.3691 = 1.0000$.</span>
+<span id="cb40-305"><a href="#cb40-305" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Additivity for Disjoint Sets:** $P(B \cup C) = P(B) + P(C) = 0.1752 + 0.4558 = 0.6309 = P(A)$.</span>
+<span id="cb40-306"><a href="#cb40-306" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Monotonicity:** $P(B) \le P(A) \implies 0.1752 \le 0.6309$.</span>
+<span id="cb40-307"><a href="#cb40-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-308"><a href="#cb40-308" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Efficiency of Tidy Vectorization:** Using <span class="in">`dplyr::mutate()`</span> combined with <span class="in">`mean()`</span> provides an execution pattern that avoids slow R <span class="in">`for`</span> loops when computing empirical probabilities across large vectors.</span>
+<span id="cb40-309"><a href="#cb40-309" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Reproducible Proofing:** Leveraging R's <span class="in">`stopifnot()`</span> and <span class="in">`all.equal()`</span> functions enforces mathematical verification in automated analytical pipelines, preventing bad data or silent errors from passing downstream into policy models.</span>
+<span id="cb40-310"><a href="#cb40-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-311"><a href="#cb40-311" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb40-312"><a href="#cb40-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-313"><a href="#cb40-313" aria-hidden="true" tabindex="-1"></a><span class="fu">## Institutional &amp; Practical Recommendations</span></span>
+<span id="cb40-314"><a href="#cb40-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-315"><a href="#cb40-315" aria-hidden="true" tabindex="-1"></a><span class="fu">### For Statistical Researchers &amp; Students</span></span>
+<span id="cb40-316"><a href="#cb40-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-317"><a href="#cb40-317" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Adopt Explicit Vector Extraction:** Always isolate target metric columns into dedicated vectors (e.g., <span class="in">`rfh_mm &lt;- df$rfh`</span>) before applying logical comparison masks to maintain clean, readable script architecture.</span>
+<span id="cb40-318"><a href="#cb40-318" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Export Visual Assets for Institutional Reports:** Save high-resolution chart exports (`ggsave("r_sample_space_partition.png", dpi = 300)`) directly into structured assets folders for cross-referencing in Microsoft Word and LaTeX document compilation (**Episode 1.7**).</span>
+<span id="cb40-319"><a href="#cb40-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-320"><a href="#cb40-320" aria-hidden="true" tabindex="-1"></a><span class="fu">### For Institutional Policy Analysts (UBOS, NPA, Bank of Uganda)</span></span>
+<span id="cb40-321"><a href="#cb40-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-322"><a href="#cb40-322" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Integrate Dekadal Baselines into Climate Risk Planning:** Utilize the baseline probability $P(\text{rfh} \ge 20\text{mm}) = 63.09\%$ and heavy rainfall risk $P(\text{rfh} \ge 50\text{mm}) = 17.52\%$ to anchor agricultural monitoring, urban drainage planning under Uganda's **NDP IV**, and disaster resilience frameworks.</span>
+<span id="cb40-323"><a href="#cb40-323" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Maintain Automated Audit Trails:** Embed programmatic <span class="in">`stopifnot()`</span> checks within automated data pipeline R scripts to verify statistical properties automatically whenever fresh dekadal data feeds are appended from CHIRPS or WFP sources.</span>
+<span id="cb40-324"><a href="#cb40-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-325"><a href="#cb40-325" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb40-326"><a href="#cb40-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-327"><a href="#cb40-327" aria-hidden="true" tabindex="-1"></a><span class="fu">## NB:</span></span>
+<span id="cb40-328"><a href="#cb40-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-329"><a href="#cb40-329" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>This document was generated with a CLI tool called Quarto. More information on it is in Hardley Wickams R4DS (2e), chapter 28.</span>
+<span id="cb40-330"><a href="#cb40-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-331"><a href="#cb40-331" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The code script is on github in case you want to reproduce it.</span>
+<span id="cb40-332"><a href="#cb40-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-333"><a href="#cb40-333" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/kjkStatScript_Like_Comment_Subscribe.jpeg)</span>{fig-align="center" width="400"}</span>
+</code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
