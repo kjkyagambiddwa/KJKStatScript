@@ -318,6 +318,6 @@ This Quarto document successfully bridges measure-theoretic probability theory w
 
 - This document was generated with a CLI tool called Quarto. More information on it is in Hardley Wickams R4DS (2e), chapter 28.
 
-- The code script is on github in case you want to reproduce it.
+- The code script is on github in case you want to reproduce it. [github link](https://github.com/kjkyagambiddwa/KJKStatScript/tree/main/Episode_1/Ep_1.5)
 
 ![](images/kjkStatScript_Like_Comment_Subscribe.jpeg){fig-align="center" width="400"}
